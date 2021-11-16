@@ -9,8 +9,10 @@ Built using ANTLR4 as an experiment
   <li>DONE: Variable Declaration</li>
   <li>DONE: Function Declaration</li>
   <li>DONE: Call Function</li>
-  <li>If - Else</li>
-  <li>For Loop </li>
-  <li>While Loop </li>
+  <li>DONE: If - Else</li>
+  <li>DONE: For Loop </li>
+  <li>DONE: While Loop </li>
+
+<li>Class and Object oriented Programming</li>
 </ul>
 

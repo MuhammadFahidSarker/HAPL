@@ -47,15 +47,64 @@ idList
 statement
  : assignment
  | functionCall
-// | ifStatement
-// | forStatement
-// | whileStatement
+ | ifStatement
+ | repeatStatement
  ;
+
+
+ repeatStatement
+ :  repeatFixed
+ |  repeatWithVar
+ |  repeatWhile
+ ;
+
+repeatWhile
+: '<' 'repeat' 'while' expression '>' block '<' '/' 'repeat' '>'
+;
+
+repeatWithVar
+: '<' 'repeat' Identifier repeatFrom repeatTo repeatStep?'>' block '<' '/' 'repeat' '>'
+;
+
+repeatFrom
+: ',' expression
+;
+
+repeatTo
+: ',' expression
+;
+
+repeatStep
+: ',' expression
+;
+
+
+
+repeatFixed
+:   '<' 'repeat' expression '>' block '<' '/' 'repeat' '>'
+;
+
 
 assignment
  : '<' Identifier indexes? '=' expression '/' '>'
  ;
 
+
+ifStatement
+ : ifStat elseIfStat* elseStat?
+ ;
+
+ifStat
+ : '<if'  expression  '>' block '</if>'
+ ;
+
+elseIfStat
+ : '<elif'  expression  '>' block  '</elif>'
+ ;
+
+elseStat
+ : '<else>'  block '</else>'
+ ;
 
 functionCall
  : '<' Identifier  exprList? '/' '>' #identifierFunctionCall
@@ -105,8 +154,8 @@ exprList
 
 
 
-MAIN_TAG_START : '<' 'main' '>';
-MAIN_TAG_END : '<' '/' 'main' '>';
+MAIN_TAG_START : '<' 'hapl' '>';
+MAIN_TAG_END : '<' '/' 'hapl' '>';
 OUT: 'out';
 INPUT : 'inp';
 Null   : 'null';
@@ -141,6 +190,11 @@ Assign   : '=';
 Comma    : ',';
 QMark    : '?';
 Colon    : ':';
+
+
+
+
+
 
 Bool
  : 'true'
