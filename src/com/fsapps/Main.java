@@ -17,7 +17,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class Main {
     public static void main(String[] args) {
         try {
-            HTPLLexer lexer = new HTPLLexer(CharStreams.fromFileName("hello.hpl"));
+            HTPLLexer lexer = new HTPLLexer(CharStreams.fromFileName("hello.htpl"));
             HTPLParser parser = new HTPLParser(new CommonTokenStream(lexer));
             parser.setBuildParseTree(true);
             ParseTree tree = parser.parse();
