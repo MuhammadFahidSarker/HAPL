@@ -531,7 +531,7 @@ public class HandleVisitor extends HAPLBaseVisitor<HAPL> {
     // Print '(' expression ')'     #printFunctionCall
     @Override
     public HAPL visitPrintFunctionCall(PrintFunctionCallContext ctx) {
-        System.out.print(this.visit(ctx.expression()));
+        System.out.println(this.visit(ctx.expression()));
         return HAPL.VOID;
     }
 
@@ -582,28 +582,28 @@ public class HandleVisitor extends HAPLBaseVisitor<HAPL> {
     // elseStat
     //  : Else Do block
     //  ;
-//    @Override
-//    public HAPL visitIfStatement(IfStatementContext ctx) {
-//
-//        // if ...
-//        if(this.visit(ctx.ifStat().expression()).asBoolean()) {
-//            return this.visit(ctx.ifStat().block());
-//        }
-//
-//        // else if ...
-//        for(int i = 0; i < ctx.elseIfStat().size(); i++) {
-//            if(this.visit(ctx.elseIfStat(i).expression()).asBoolean()) {
-//                return this.visit(ctx.elseIfStat(i).block());
-//            }
-//        }
-//
-//        // else ...
-//        if(ctx.elseStat() != null) {
-//            return this.visit(ctx.elseStat().block());
-//        }
-//
-//        return HAPL.VOID;
-//    }
+    @Override
+    public HAPL visitIfStatement(IfStatementContext ctx) {
+
+        // if ...
+        if(this.visit(ctx.ifStat().expression()).asBoolean()) {
+            return this.visit(ctx.ifStat().block());
+        }
+
+        // else if ...
+        for(int i = 0; i < ctx.elseIfStat().size(); i++) {
+            if(this.visit(ctx.elseIfStat(i).expression()).asBoolean()) {
+                return this.visit(ctx.elseIfStat(i).block());
+            }
+        }
+
+        // else ...
+        if(ctx.elseStat() != null) {
+            return this.visit(ctx.elseStat().block());
+        }
+
+        return HAPL.VOID;
+    }
 
     // block
     // : (statement | functionDecl)* (Return expression)?
@@ -628,35 +628,45 @@ public class HandleVisitor extends HAPLBaseVisitor<HAPL> {
         return HAPL.VOID;
     }
 
-    // forStatement
-    // : For Identifier '=' expression To expression OBrace block CBrace
-    // ;
-//    @Override
-//    public HAPL visitForStatement(ForStatementContext ctx) {
-//        int start = this.visit(ctx.expression(0)).asDouble().intValue();
-//        int stop = this.visit(ctx.expression(1)).asDouble().intValue();
-//        for(int i = start; i <= stop; i++) {
-//            scope.assign(ctx.Identifier().getText(), new HAPL(i));
-//            HAPL FunctionReturn = this.visit(ctx.block());
-//            if(FunctionReturn != HAPL.VOID) {
-//                return FunctionReturn;
-//            }
-//        }
-//        return HAPL.VOID;
-//    }
-//
-//    // whileStatement
-//    // : While expression OBrace block CBrace
-//    // ;
-//    @Override
-//    public HAPL visitWhileStatement(WhileStatementContext ctx) {
-//        while( this.visit(ctx.expression()).asBoolean() ) {
-//            HAPL FunctionReturn = this.visit(ctx.block());
-//            if (FunctionReturn != HAPL.VOID) {
-//                return FunctionReturn;
-//            }
-//        }
-//        return HAPL.VOID;
-//    }
+    @Override
+    public HAPL visitRepeatFixed(RepeatFixedContext ctx) {
+        int count = this.visit(ctx.expression()).asDouble().intValue();
+        for(int i = 1; i <= count; i++) {
+            scope.assign("repeatFor"+count, new HAPL(i));
+            HAPL FunctionReturn = this.visit(ctx.block());
+            if(FunctionReturn != HAPL.VOID) {
+                return FunctionReturn;
+            }
+        }
+        return HAPL.VOID;
+    }
+
+    @Override
+    public HAPL visitRepeatWithVar(RepeatWithVarContext ctx) {
+        int start = this.visit(ctx.repeatFrom()).asDouble().intValue();
+        int stop = this.visit(ctx.repeatTo()).asDouble().intValue();
+        RepeatStepContext stepProvided = ctx.repeatStep();
+        int step = stepProvided == null ? 1 : this.visit(stepProvided).asDouble().intValue();
+
+        for(int i = start; i <= stop; i+= step) {
+            scope.assign(ctx.Identifier().getText(), new HAPL(i));
+            HAPL FunctionReturn = this.visit(ctx.block());
+            if(FunctionReturn != HAPL.VOID) {
+                return FunctionReturn;
+            }
+        }
+        return HAPL.VOID;
+    }
+
+    @Override
+    public HAPL visitRepeatWhile(RepeatWhileContext ctx) {
+        while( this.visit(ctx.expression()).asBoolean() ) {
+            HAPL FunctionReturn = this.visit(ctx.block());
+            if (FunctionReturn != HAPL.VOID) {
+                return FunctionReturn;
+            }
+        }
+        return HAPL.VOID;
+    }
 
 }
